@@ -7,14 +7,14 @@
     <div class="flex items-center gap-4">
         <ul class="flex flex-row font-medium space-x-4 text-sm">
             <li>
-                <a href="/" class="text-gray-900 hover:underline py-1 px-3">Home</a>
+                <a href="{{ route('home') }}" class="text-gray-900 hover:underline py-1 px-3">Home</a>
             </li>
         </ul>
-        <a href="#"
+        <a href="{{ route('login') }}"
             class="py-1.5 px-4 text-sm font-medium text-gray-900 bg-white rounded-full border border-gray-200 hover:bg-gray-100 hover:text-blue-700">
             Login
         </a>
-        <a href="#"
+        <a href="{{ route('register') }}"
             class="py-1.5 px-4 text-sm font-medium text-gray-900 bg-white rounded-full border border-gray-200 hover:bg-gray-100 hover:text-blue-700">
             Register
         </a>

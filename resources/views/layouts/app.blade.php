@@ -2,18 +2,22 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" >
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>@yield('title', 'LaporMas')</title>
-    <link rel="stylesheet" href="{{ asset('tailwind/css/flowbite.min.css') }}">
+  <meta charset="UTF-8" >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>@yield('title', 'LaporMas')</title>
+  <link rel="stylesheet" href="{{ asset('tailwind/css/flowbite.min.css') }}">
 </head>
 
 <body class="bg-gray-100 text-gray-800">
+  @guest
     @include('partials.navbar')
+  @endguest
   <div class="flex">
-
-         @include('partials.sidebar')
+      @auth
+        @include('partials.sidebar')
+      @endauth
         <main class="flex-1 p-6">
             @yield('content')
         </main>

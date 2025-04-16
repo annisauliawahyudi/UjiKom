@@ -1,34 +1,54 @@
 <?php
 
+use App\Models\Pengaduan;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ComentController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Admin\UserController;
 
-Route::get('/', function () {
-    return view('welcome');
+
+Route::get('/', [ComentController::class, 'index'])->name('home');
+Route::get('komentar/{id}', [ComentController::class, 'show'])->name('coment');
+Route::post('/pengaduan/{pengaduanId}/komentar', [ComentController::class, 'store'])->name('coment.store');
+
+Route::get('/login', [AuthController::class, 'loginPage'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+
+Route::get('/register', [AuthController::class, 'registerPage'])->name('register');
+Route::post('/register', [AuthController::class, 'register']);
+
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::middleware(['auth'])->group(function() {
+    Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
 });
 
-Route::get('/login', function(){
-    return view('auth.login');
+Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.user.')->group(function(){
+    Route::get('/user', [UserController::class, 'index'])->name('petugas');
+    Route::get('/admin', [UserController::class, 'indexAdmin'])->name('index');
+    Route::post('/admin/users', [UserController::class, 'store'])->name('store');
+    Route::put('/users/{id}', [UserController::class, 'update'])->name('update');
+    Route::delete('/admin/users/{id}', [UserController::class, 'destroy'])->name('destroy');
+    // Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
 });
-Route::get('/register', function(){
-    return view('auth.register');
+
+Route::prefix('petugas')->middleware(['auth', 'role:petugas'])->name('petugas.')->group(function(){
+    // Route::get('/report', [ReportController::class,'reportView'])->name('report');
+    Route::get('pengaduan/{id}', [ReportController::class, 'show'])->name('coment');
+    Route::put('/pengaduan/{id}/aksi', [ReportController::class, 'aksiGabungan'])->name('aksi');
+    Route::delete('/pengaduan/{id}', [ReportController::class, 'destroy'])->name('destroy');
+    Route::delete('/komentar/{id}', [ComentController::class, 'destroy'])->name('komentar.destroy');
+
 });
-Route::get('/dashboard', function(){
-    return view('dashboard');
-});
-Route::get('/sidebar', function(){
-    return view('partials.sidebar');
-});
-Route::get('/admin-show', function(){
-    return view('admin.index');
-});
-Route::get('/admin-akun', function(){
-    return view('admin.AdminAcount');
-});
-Route::get('/masyarakat-akun', function(){
-    return view('masyarakat.index');
-});
-Route::get('/petugas-laporan', function(){
-    return view('petugas.index');
+
+Route::prefix('masyarakat')->middleware(['auth', 'role:masyarakat'])->name('masyarakat.')->group(function(){
+    Route::get('/report', [ReportController::class, 'index'])->name('index');
+    Route::post('/report/store', [ReportController::class, 'store'])->name('store');
+    Route::get('/report/create', [ReportController::class, 'create'])->name('create');
+    Route::put('report/edit{id}',[ReportController::class, 'update'])->name('update');
+    Route::delete('report/{id}', [ReportController::class, 'destroy'])->name('destroy');
 });
 
 

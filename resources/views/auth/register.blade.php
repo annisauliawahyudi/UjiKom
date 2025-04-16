@@ -1,4 +1,3 @@
-{{-- <x-gue> --}}
 @extends('layouts.app')
 @section('content')
     <div class="text-center mt-10">
@@ -7,7 +6,8 @@
     </div>
     <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
         <div class="mx-auto w-full max-w-sm">
-            <form class="space-y-6" action="#" method="POST">
+            <form class="space-y-6" action="{{ route('register') }}" method="POST">
+                @csrf
                 <div>
                     <label for="email" class="block text-sm/6 font-medium text-gray-900">Nama</label>
                     <div class="mt-2">
@@ -43,8 +43,19 @@
                         class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Submit</button>
                 </div>
             </form>
-
-
         </div>
     </div>
+    @endsection
+    @if (session('success'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: '{{ session('success') }}',
+                confirmButtonText: 'Oke',
+            });
+        });
+    </script>
+@endif
 

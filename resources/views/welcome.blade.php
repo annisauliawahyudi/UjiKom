@@ -3,6 +3,7 @@
 @section('title', 'Welcome')
 
 @section('content')
+@if(!Auth::user())
     <div class="text-center mt-6">
         <h1 class="text-4xl font-bold mb-4">Selamat Datang di Aplikasi LaporMas</h1>
         <p class="mb-6 text-gray-600">Silahkan Login atau Daftar Untuk Melanjutkan.</p>
@@ -10,17 +11,18 @@
         <div class="mt-10 px-6">
             <h2 class="text-3xl font-bold mb-6 text-center">Laporan</h2>
 
+            @if ($pengaduans->isEmpty())
                 <div class="text-center py-20 bg-white rounded-lg shadow-md dark:bg-gray-800">
                     <h3 class="text-2xl font-semibold text-gray-700 dark:text-white mb-4">Tidak ada pengaduan</h3>
                     <p class="text-gray-500 dark:text-gray-300 mb-6">YUK BUAT PENGADUAN!</p>
-                    <a href=""
+                    <a href="{{ route('login') }}"
                         class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg">
                         Buat Pengaduan
                     </a>
                 </div>
-
+            @else
                 <div class="flex justify-between items-center mt-8 pb-4">
-                    <form method="GET" action="#">
+                    <form method="GET" action="{{ route('home') }}">
                         <div class="pb-4 mt-8">
                             <label for="table-search" class="sr-only">Search</label>
                             <div class="relative mt-1">
@@ -37,75 +39,111 @@
                             </div>
                         </div>
                     </form>
-                    <div>
-                        <label for="provinsi" class="block text-sm font-medium">Provinsi</label>
-                        <select name="provinsi" id="provinsi" onchange="this.form.submit()"
-                            class="block w-48 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">Semua</option>
+                    <form action="{{ route('home') }}" method="GET" class="flex gap-3">
+                        <div>
+                            <label for="provinsi" class="block text-sm font-medium">Provinsi</label>
+                            <select name="provinsi" id="provinsi" onchange="this.form.submit()"
+                                class="block w-48 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                <option value="">Semua</option>
+                                @foreach ($provinsis as $prov)
+                                    <option value="{{ $prov }}"
+                                        {{ request('provinsi') == $prov ? 'selected' : '' }}>
+                                        {{ $prov }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <!-- Filter Status -->
+                        <div>
+                            <label for="status" class="block text-sm font-medium">Status</label>
+                            <select name="status" id="status" onchange="this.form.submit()"
+                                class="block w-40 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                <option value="">Semua</option>
+                                @foreach ($statuses as $st)
+                                    <option value="{{ $st->id }}"
+                                        {{ request('status') == $st->id ? 'selected' : '' }}>
+                                        {{ $st->status_pengaduan }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                        </select>
-                    </div>
-
-                    <!-- Filter Status -->
-                    <div>
-                        <label for="status" class="block text-sm font-medium">Status</label>
-                        <select name="status" id="status" onchange="this.form.submit()"
-                            class="block w-40 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">Semua</option>
-
-                        </select>
-                    </div>
-
-                    <!-- Filter Tipe -->
-                    <div>
-                        <label for="tipe" class="block text-sm font-medium">Tipe Pengaduan</label>
-                        <select name="tipe" id="tipe" onchange="this.form.submit()"
-                            class="block w-52 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">Semua</option>
-
-                        </select>
-                    </div>
-
-                    <form action="" method="GET" class="mb-4">
+                        <!-- Filter Tipe -->
+                        <div>
+                            <label for="tipe" class="block text-sm font-medium">Tipe Pengaduan</label>
+                            <select name="tipe" id="tipe" onchange="this.form.submit()"
+                                class="block w-52 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                <option value="">Semua</option>
+                                @foreach ($tipePengaduans as $tp)
+                                    <option value="{{ $tp->id }}"
+                                        {{ request('tipe') == $tp->id ? 'selected' : '' }}>
+                                        {{ $tp->nama }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </form>
+                    @if (session('error'))
+                        <div class="bg-red-100 text-red-800 px-4 py-2 rounded-md mb-4">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+                    <form action="{{ route('export_pengaduan') }}" method="GET" class="mb-4">
                         <button type="submit" class="mt-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
                             Export Pengaduan.xlsx
                         </button>
                     </form>
                 </div>
 
-
-
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-
+                    @foreach ($pengaduans as $pengaduan)
                         <div
                             class="bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
                             <a href="#">
                                 <img class="rounded-t-lg w-full h-48 object-cover"
-                                    src="{{ asset('image/report.png') }}" alt="Gambar Pengaduan" />
+                                    src="{{ asset('storage/' . $pengaduan->gambar) }}" alt="Gambar Pengaduan" />
                             </a>
                             <div class="p-5">
                                 <div class="flex gap-3 items-center justify-center">
                                     <h5
-                                        class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white overflow-hidden text-ellipsis whitespace-nowrap max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl"> jalan rusak
+                                        class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white overflow-hidden text-ellipsis whitespace-nowrap max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl">
+                                        {{ $pengaduan->keluhan }}
                                     </h5>
-                                    {{-- status pengaduan --}}
+
+                                    @php
+                                        $statusId = $pengaduan->status_pengaduan_id;
+                                        $statusText = $pengaduan->status->status_pengaduan ?? 'Pending';
+                                        $statusColor = match ($statusId) {
+                                            1 => 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
+                                            2 => 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
+                                            3 => 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
+                                            4 => 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-400',
+                                            default => 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
+                                        };
+                                        $dotColor = match ($statusId) {
+                                            1 => 'bg-gray-500',
+                                            2 => 'bg-green-500',
+                                            3 => 'bg-blue-500',
+                                            4 => 'bg-red-500',
+                                            default => 'bg-gray-500',
+                                        };
+                                    @endphp
+
                                     <div>
                                         <span
-                                            class="inline-flex items-center 
-                                             ext-xs font-medium px-2.5 py-0.5 rounded-full">
-                                            <span class="w-2 h-2 me-1 
-                                             rounded-full"></span>
-                                             pending
+                                            class="inline-flex items-center {{ $statusColor }} text-xs font-medium px-2.5 py-0.5 rounded-full">
+                                            <span class="w-2 h-2 me-1 {{ $dotColor }} rounded-full"></span>
+                                            {{ $statusText }}
                                         </span>
                                     </div>
                                 </div>
 
                                 <p class="mb-3 font-normal text-gray-700 dark:text-gray-400 line-clamp-2">
                                     📍Lokasi<br>
-                                    jawa
+                                    {{ "{$pengaduan->kelurahan}, Kec. {$pengaduan->kecamatan}, {$pengaduan->kota_kabupaten}, {$pengaduan->provinsi}" }}
                                 </p>
                                 {{-- Form komentar --}}
-                                <form action="#" method="POST">
+                                <form action="{{ route('coment.store', $pengaduan->id) }}" method="POST">
+                                    @csrf
                                     <label for="chat" class="sr-only">Komentar..</label>
                                     <div
                                         class="flex justify-between items-end px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 space-x-4">
@@ -119,8 +157,7 @@
                                                 placeholder="Komentar..." required></textarea>
 
                                             <input type="hidden" name="tipe_komentator"
-
-                                                >
+                                                value="{{ Auth::check() ? 'user' : 'guest' }}">
                                         </div>
 
                                         <button type="submit"
@@ -138,12 +175,13 @@
                                 {{-- Like & Modal Komentar --}}
                                 <div class="flex items-center gap-4 mt-4 justify-center">
                                     <div class="flex flex-col items-center">
-
-                                        <button type="button" id="like-btn-"
-
+                                        @php
+                                            $liked = $pengaduan->user_like;
+                                        @endphp
+                                        <button type="button" id="like-btn-{{ $pengaduan->id }}"
+                                            onclick="like({{ $pengaduan->id }})"
                                             class="p-2 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:hover:text-white dark:hover:bg-gray-600">
-                                            <svg class="w-6 h-6 "
-
+                                            <svg class="w-6 h-6 {{ $liked ? 'text-red-500' : 'text-gray-500 dark:text-white' }}"
                                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                                 stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -151,14 +189,25 @@
                                             </svg>
                                         </button>
                                         <p class="text-xs text-gray-900 dark:text-white mt-1"
-                                            id="like-count">
-
+                                            id="like-count-{{ $pengaduan->id }}">
+                                            {{ $pengaduan->likes()->count() }}
                                         </p>
                                     </div>
 
-                                    <button data-modal-target="default-modal-coment"
+                                    <div class="flex items-center space-x-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                        <span id="view-count-{{ $pengaduan->id }}" class="text-white border border-blue-500 px-2 py-0.5 rounded-full text-sm">{{ $pengaduan->view_count ?? 0 }} kali
+                                            dilihat</span>
+                                    </div>
 
-                                        data-modal-toggle="default-modal-coment"
+                                    <button data-modal-target="default-modal-coment{{ $pengaduan->id }}"
+                                        data-modal-toggle="default-modal-coment{{ $pengaduan->id }}"
                                         class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5"
                                         type="button">
                                         Lihat Komentar
@@ -168,9 +217,9 @@
                                 </div>
                             </div>
                         </div>
-
+                    @endforeach
                 </div>
-
+            @endif
         </div>
     </div>
     @if (session('success'))
@@ -185,7 +234,86 @@
             });
         </script>
     @endif
+    {{-- Like AJAX --}}
+    <script>
+        function like(pengaduanId) {
+            fetch(`/pengaduan/${pengaduanId}/like`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    const btn = document.getElementById(`like-btn-${pengaduanId}`).querySelector('svg');
+                    if (data.status) {
+                        // Saat berhasil like, warnai merah
+                        btn.classList.add('text-red-500');
+                        btn.classList.remove('text-gray-500');
 
+                        // Setelah 1 menit, kembalikan warnanya ke abu-abu
+                        setTimeout(() => {
+                            btn.classList.remove('text-red-500');
+                            btn.classList.add('text-gray-500');
+                        }, 60000); // 60 detik
+                    } else {
+                        // Jika gagal like atau unlike
+                        btn.classList.remove('text-red-500');
+                        btn.classList.add('text-gray-500');
+                    }
+
+                    const likeCountElement = document.getElementById(`like-count-${pengaduanId}`);
+                    if (likeCountElement) {
+                        likeCountElement.textContent = data.likes_count;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+    </script>
+    {{-- view --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('[data-modal-target]').forEach(button => {
+                button.addEventListener('click', function() {
+                    let pengaduanId = this.getAttribute('data-modal-target').replace(
+                        'default-modal-coment', '');
+
+                    // Mengirimkan request untuk meningkatkan view_count
+                    fetch(`/pengaduan/${pengaduanId}/view`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector(
+                                    'meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            body: JSON.stringify({
+                                pengaduan_id: pengaduanId
+                            })
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Gagal increment view_count');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.success) {
+                                let viewCountElement = document.getElementById('view-count-' +
+                                    pengaduanId);
+                                viewCountElement.innerText = data.view_count + ' kali dilihat';
+                            }
+
+                        })
+                        .catch(error => console.error('Error:', error));
+                });
+            });
+
+        });
+    </script>
+    @endif
 @endsection
 
 <script src="https://cdn.tailwindcss.com"></script>
