@@ -206,8 +206,8 @@
                                             dilihat</span>
                                     </div>
 
-                                    <button data-modal-target="default-modal-coment{{ $pengaduan->id }}"
-                                        data-modal-toggle="default-modal-coment{{ $pengaduan->id }}"
+                                    <button data-modal-target="default-modal-coment-{{ $pengaduan->id }}"
+                                        data-modal-toggle="default-modal-coment-{{ $pengaduan->id }}"
                                         class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5"
                                         type="button">
                                         Lihat Komentar

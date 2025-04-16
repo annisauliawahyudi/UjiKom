@@ -45,12 +45,16 @@ Route::prefix('petugas')->middleware(['auth', 'role:petugas'])->name('petugas.')
 
 Route::prefix('masyarakat')->middleware(['auth', 'role:masyarakat'])->name('masyarakat.')->group(function(){
     Route::get('/report', [ReportController::class, 'index'])->name('index');
+    Route::get('/show-all', [ComentController::class,'indexMasyarakat'])->name('all');
     Route::post('/report/store', [ReportController::class, 'store'])->name('store');
     Route::get('/report/create', [ReportController::class, 'create'])->name('create');
     Route::put('report/edit{id}',[ReportController::class, 'update'])->name('update');
     Route::delete('report/{id}', [ReportController::class, 'destroy'])->name('destroy');
 });
 
+Route::post('/pengaduan/{id}/like', [ReportController::class, 'like'])->name('pengaduan.like');
+Route::post('pengaduan/{id}/view', [ReportController::class, 'incrementViewCount'])->name('pengaduan.view');
+Route::get('/export-pengaduan', [ReportController::class, 'export'])->name('export_pengaduan');
 
 
 

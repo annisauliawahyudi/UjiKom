@@ -6,6 +6,8 @@ use App\Models\User;
 use App\Models\Pengaduan;
 use Illuminate\Http\Request;
 use App\Models\TipePengaduan;
+use App\Models\StatusPengaduan;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -47,6 +49,8 @@ class DashboardController extends Controller
 
         // petugas
         if ($user->role === 'petugas') {
+        $status = $request->query('status');
+
             $pengaduans = Pengaduan::with('status', 'tipePengaduan')
                 ->where('provinsi', $user->provinsi) // filter sesuai provinsi petugas
                 ->when($search, function ($query, $search) {
@@ -61,13 +65,16 @@ class DashboardController extends Controller
                             });
                     });
                 })
+                ->when($status, fn($q) => $q->where('status_pengaduan_id', $status))
                 ->orderBy('created_at', 'asc')
                 ->paginate(5)
                 ->appends(['search' => $search]);
 
             $tipePengaduans = TipePengaduan::all();
+        $statuses = StatusPengaduan::all();
 
-            return view('dashboard', compact('pengaduans', 'tipePengaduans', 'search', 'statusCounts', 'topDaerah'));
+
+            return view('dashboard', compact('pengaduans', 'tipePengaduans', 'search', 'statusCounts', 'topDaerah', 'statuses'));
         }
 
         // admin

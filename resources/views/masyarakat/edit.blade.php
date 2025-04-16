@@ -1,5 +1,5 @@
 <!-- Modal Edit -->
-<div id="authentication-modal-edit" tabindex="-1" aria-hidden="true"
+<div id="authentication-modal-edit-{{ $pengaduan->id }}" tabindex="-1" aria-hidden="true"
     class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
     <div class="relative p-4 w-full max-w-4xl max-h-full">
         <!-- Modal content -->
@@ -11,7 +11,7 @@
                 </h3>
                 <button type="button"
                     class="text-gray-400 hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                    data-modal-hide="authentication-modal-edit">
+                    data-modal-hide="authentication-modal-edit-{{ $pengaduan->id }}">
                     <svg class="w-3 h-3" fill="none" viewBox="0 0 14 14">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M1 1l6 6m0 0l6 6M7 7l6-6M7 7L1 13" />
@@ -21,14 +21,17 @@
 
             <!-- Modal body -->
             <div class="p-6">
-                <form action="" method="POST"
+                <form action="{{ route('masyarakat.update', $pengaduan->id) }}" method="POST"
                     enctype="multipart/form-data" class="space-y-4">
+                    @csrf
+                    @method('PUT')
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Provinsi -->
                         <div>
                             <label for="edit-provinsi"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white  text-left">Provinsi</label>
-                            <input type="text" id="edit-provinsi" name="provinsi" 
+                            <input type="text" id="edit-provinsi" name="provinsi" value="{{ $pengaduan->provinsi }}"
                                 class="w-full p-2.5 rounded-lg text-sm bg-gray-50 border border-gray-300 text-gray-900 dark:bg-gray-600 dark:text-white dark:border-gray-500"
                                 required />
                         </div>
@@ -38,6 +41,7 @@
                             <label for="edit-kota"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white  text-left">Kota/Kabupaten</label>
                             <input type="text" id="edit-kota" name="kota_kabupaten"
+                                value="{{ $pengaduan->kota_kabupaten }}"
                                 class="w-full p-2.5 rounded-lg text-sm bg-gray-50 border border-gray-300 text-gray-900 dark:bg-gray-600 dark:text-white dark:border-gray-500"
                                 required />
                         </div>
@@ -47,6 +51,7 @@
                             <label for="edit-kecamatan"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white  text-left">Kecamatan</label>
                             <input type="text" id="edit-kecamatan" name="kecamatan"
+                                value="{{ $pengaduan->kecamatan }}"
                                 class="w-full p-2.5 rounded-lg text-sm bg-gray-50 border border-gray-300 text-gray-900 dark:bg-gray-600 dark:text-white dark:border-gray-500"
                                 required />
                         </div>
@@ -56,6 +61,7 @@
                             <label for="edit-kelurahan"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white  text-left">Kelurahan</label>
                             <input type="text" id="edit-kelurahan" name="kelurahan"
+                                value="{{ $pengaduan->kelurahan }}"
                                 class="w-full p-2.5 rounded-lg text-sm bg-gray-50 border border-gray-300 text-gray-900 dark:bg-gray-600 dark:text-white dark:border-gray-500"
                                 required />
                         </div>
@@ -67,6 +73,11 @@
                             <select id="edit-tipe" name="tipe_pengaduan_id"
                                 class="w-full p-2.5 rounded-lg text-sm bg-gray-50 border border-gray-300 text-gray-900 dark:bg-gray-600 dark:text-white dark:border-gray-500"
                                 required>
+                                @foreach ($tipePengaduans as $tipe)
+                                    <option value="{{ $tipe->id }}"
+                                        {{ $pengaduan->tipe_pengaduan_id == $tipe->id ? 'selected' : '' }}>
+                                        {{ $tipe->nama }}</option>
+                                @endforeach
                             </select>
                         </div>
 
@@ -87,7 +98,7 @@
                             Keluhan</label>
                         <textarea id="edit-keluhan" name="keluhan" rows="4"
                             class="w-full p-2.5 rounded-lg text-sm bg-gray-50 border border-gray-300 text-gray-900 dark:bg-gray-600 dark:text-white dark:border-gray-500"
-                            placeholder="Jelaskan keluhan Anda">jalanan jelek banget</textarea>
+                            placeholder="Jelaskan keluhan Anda">{{ $pengaduan->keluhan }}</textarea>
                     </div>
 
                     <!-- Tombol Simpan -->

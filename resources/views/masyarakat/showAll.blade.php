@@ -1,3 +1,8 @@
+@extends('layouts.app')
+
+@section('title', 'Daftardmin')
+
+@section('content')
 <h1 class="text-4xl font-bold mb-2">Daftar Laporan Saya</h1>
 @if (session('error'))
     <div class="bg-red-100 text-red-800 px-4 py-2 rounded-md mb-4">
@@ -125,8 +130,8 @@
                             </button>
                         </td>
                     </tr>
-                    @include('masyarakat.edit')
-                    @include('masyarakat.delete')
+                    {{-- @include('masyarakat.edit')
+                    @include('masyarakat.delete') --}}
                 @endforeach
             @else
                 <tr>
@@ -190,3 +195,5 @@
         @endif
     </ul>
 </nav>
+@endsection
+

@@ -9,7 +9,26 @@
             @include('admin.create')
             {{-- table --}}
             @include('admin.show')
-            {{-- @include('admin.AdminAcount') --}}
+            {{-- @include('admin.officerAcount') --}}
             </div>
+            @if (session('success'))
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: '{{ session('success') }}',
+                            confirmButtonText: 'Oke',
+                        });
+                    });
+                </script>
+            @endif
+            <script>
+        const input = document.getElementById('table-search');
+        input.addEventListener('input', function () {
+            this.form.submit();
+        });
+    </script>
         </div>
+        {{-- @include('admin.officerAcount') --}}
     @endsection

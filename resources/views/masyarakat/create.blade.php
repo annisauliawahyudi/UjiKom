@@ -29,8 +29,8 @@
 
             <!-- Modal body -->
             <div class="p-6">
-                <form action="" method="POST" enctype="multipart/form-data" class="space-y-4">
-
+                <form action="{{ route('masyarakat.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                    @csrf
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Provinsi -->
                         <div>
@@ -81,6 +81,9 @@
                                 class="w-full p-2.5 rounded-lg text-sm bg-gray-50 border border-gray-300 text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-600"
                                 required>
                                 <option value="">Pilih Tipe</option>
+                                @foreach ($tipePengaduans as $tipe )
+                                    <option value="{{ $tipe->id }}">{{ $tipe->nama }}</option>
+                                @endforeach
                             </select>
                         </div>
 

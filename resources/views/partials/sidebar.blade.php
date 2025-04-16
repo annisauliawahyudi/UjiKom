@@ -101,7 +101,7 @@
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M16 0H4a2 2 0 0 0-2 2v1H1a1 1 0 0 0 0 2h1v2H1a1 1 0 0 0 0 2h1v2H1a1 1 0 0 0 0 2h1v2H1a1 1 0 0 0 0 2h1v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4.5a3 3 0 1 1 0 6 3 3 0 0 1 0-6ZM13.929 17H7.071a.5.5 0 0 1-.5-.5 3.935 3.935 0 1 1 7.858 0 .5.5 0 0 1-.5.5Z" />
                     </svg>
-                    <span class="flex-1 ms-3 whitespace-nowrap">Akun Petugast</span>
+                    <span class="flex-1 ms-3 whitespace-nowrap">Akun Petugas</span>
                 </a>
             </li>
             @elseif (Auth::user()->role == 'petugas')
@@ -125,9 +125,20 @@
                             <path
                                 d="M5 3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7.828a2 2 0 0 0-.586-1.414l-3.828-3.828A2 2 0 0 0 15.172 2H5zm9 5h4v2h-4V8zM5 12h14v2H5v-2zm0 4h14v2H5v-2z" />
                         </svg>
-                        <span class="ms-3">Daftar Laporan</span>
+                        <span class="ms-3">Laporan Saya</span>
                     </a>
                 </li>
+                {{-- <li>
+                    <a href="{{ route('masyarakat.all') }}"
+                        class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                        <svg class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                            fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M5 3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7.828a2 2 0 0 0-.586-1.414l-3.828-3.828A2 2 0 0 0 15.172 2H5zm9 5h4v2h-4V8zM5 12h14v2H5v-2zm0 4h14v2H5v-2z" />
+                        </svg>
+                        <span class="ms-3">Daftar Laporan</span>
+                    </a>
+                </li> --}}
             @endif
         </ul>
     </div>

@@ -46,15 +46,54 @@ class ComentController extends Controller
 
             foreach ($pengaduans as $pengaduan) {
             $pengaduan->user_like = Like::where('pengaduan_id', $pengaduan->id)
-                ->where('session_id', $sessionId)
-                ->exists();
-            }
+                                ->where('session_id', $sessionId)
+                                ->exists();
+}
 
 
         $provinsis = Pengaduan::select('provinsi')->distinct()->pluck('provinsi');
         $statuses = StatusPengaduan::all();
         $tipePengaduans = TipePengaduan::all();
         return view('welcome', compact('pengaduans', 'search', 'provinsi', 'status', 'tipe', 'provinsis', 'statuses', 'tipePengaduans'));
+    }
+    public function indexMasyarakat(Request $request)
+    {
+        $pengaduans = Pengaduan::all(); 
+        $sessionId = session()->getId(); 
+        $search = $request->query('search');
+        $provinsi = $request->query('provinsi');
+        $status = $request->query('status');
+        $tipe = $request->query('tipe');
+
+        $pengaduans = Pengaduan::when($search, function($query, $search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('provinsi', 'like', '%' . $search . '%')
+                    ->orWhere('kota_kabupaten', 'like', '%' . $search . '%')
+                    ->orWhere('kecamatan', 'like', '%' . $search . '%')
+                    ->orWhere('kelurahan', 'like', '%' . $search . '%')
+                    ->orWhere('keluhan', 'like', '%' . $search . '%')
+                    ->orWhereHas('tipePengaduan', function ($q2) use ($search) {
+                        $q2->where('nama', 'like', '%' . $search . '%');
+                });
+            });
+        })
+        ->when($provinsi, fn($q) => $q->where('provinsi', $provinsi))
+        ->when($status, fn($q) => $q->where('status_pengaduan_id', $status))
+        ->when($tipe, fn($q) => $q->where('tipe_pengaduan_id', $tipe))
+        ->orderBy('created_at', 'desc') // optional: biar terbaru muncul dulu
+        ->get();
+
+            foreach ($pengaduans as $pengaduan) {
+            $pengaduan->user_like = Like::where('pengaduan_id', $pengaduan->id)
+                                ->where('session_id', $sessionId)
+                                ->exists();
+}
+
+
+        $provinsis = Pengaduan::select('provinsi')->distinct()->pluck('provinsi');
+        $statuses = StatusPengaduan::all();
+        $tipePengaduans = TipePengaduan::all();
+        return view('masyarakat.show-all', compact('pengaduans', 'search', 'provinsi', 'status', 'tipe', 'provinsis', 'statuses', 'tipePengaduans'));
     }
 
 
@@ -125,6 +164,7 @@ class ComentController extends Controller
     {
         $komentar = Komentar::findOrFail($id);
 
+        // Cek jika user login dan role-nya adalah petugas
         if (Auth::check() && Auth::user()->role === 'petugas') {
             $komentar->delete();
             return redirect()->back()->with('success', 'Komentar berhasil dihapus!');
